@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark light">
+  <title>F1 Race Intelligence</title>
+  <link rel="icon" type="image/svg+xml" href="img/mark.svg">
+  <link rel="preload" href="fonts/PublicSans-Variable.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="css/styles.css">
+  <script src="js/theme.js"></script>
+</head>
+<body>
+  <a class="skip" href="#main">Skip to content</a>
+
+  <header class="topbar">
+    <div class="brand">
+      <svg class="mark" viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+        <path class="m-up" d="M3 18 21 6"/><path class="m-down" d="M3 6 21 18"/><path class="m-flat" d="M3 12h18"/>
+      </svg>
+      <span class="brand-name">F1 Race Intelligence</span>
+    </div>
+
+    <nav class="tabs" role="tablist" aria-label="Sections">
+      <button role="tab" id="tabbtn-overview" aria-controls="tab-overview" data-tab="overview" aria-selected="true"><span>Overview</span></button>
+      <button role="tab" id="tabbtn-race" aria-controls="tab-race" data-tab="race" aria-selected="false" tabindex="-1"><span>Race</span></button>
+      <button role="tab" id="tabbtn-drivers" aria-controls="tab-drivers" data-tab="drivers" aria-selected="false" tabindex="-1"><span>Driver comparison</span></button>
+      <button role="tab" id="tabbtn-constructors" aria-controls="tab-constructors" data-tab="constructors" aria-selected="false" tabindex="-1"><span>Constructors</span></button>
+      <button role="tab" id="tabbtn-quality" aria-controls="tab-quality" data-tab="quality" aria-selected="false" tabindex="-1"><span>Data quality</span></button>
+    </nav>
+
+    <div class="controls">
+      <label class="field season-field"><span class="sr-only">Season</span>
+        <select id="seasonSelect" aria-label="Season"></select>
+      </label>
+      <button type="button" class="icon-btn" id="themeToggle" aria-label="Switch to light theme" title="Switch theme">
+        <svg class="i-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6 7 7M17 17l1.4 1.4M5.6 18.4 7 17M17 7l1.4-1.4"/>
+        </svg>
+        <svg class="i-moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round" aria-hidden="true">
+          <path d="M20 14.5A8 8 0 0 1 9.5 4 8 8 0 1 0 20 14.5Z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main id="main" tabindex="-1">
+    <div class="page-head">
+      <div>
+        <h1 id="pageTitle">Overview</h1>
+        <p class="page-line" id="dataSource">Historical Formula 1 statistics</p>
+      </div>
+      <div class="head-actions" id="overviewActions">
+        <button type="button" class="btn" id="latestRace" hidden></button>
+      </div>
+      <div class="head-actions" id="raceControls" hidden>
+        <label class="field">Grand Prix <select id="raceSelect"></select></label>
+        <label class="field">Constructor <select id="raceTeamFilter"><option value="">All</option></select></label>
+      </div>
+    </div>
+    <div class="status-row">
+      <div id="status" class="status" role="status"></div>
+      <button type="button" class="btn" id="retry" hidden>Try again</button>
+    </div>
+
+    <section id="tab-overview" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-overview">
+      <div class="tiles" id="overviewTiles"></div>
+      <div class="card">
+        <div class="card-head">
+          <div>
+            <h2>Championship points by round</h2>
+            <p class="hint" id="progressionHint"></p>
+          </div>
+          <div class="seg" role="group" aria-label="Chart view">
+            <button type="button" data-view="points" aria-pressed="true"><span>Points</span></button>
+            <button type="button" data-view="gap" aria-pressed="false"><span>Gap to leader</span></button>
+          </div>
+        </div>
+        <div class="chart-box"><canvas id="progressionChart" role="img" aria-label="Line chart of the top five drivers’ championship points after each round"></canvas></div>
+      </div>
+      <div class="grid-2 standings" id="standingsGrid">
+        <div class="card" id="driversCard">
+          <div class="card-head"><h2>Driver standings</h2><button type="button" class="btn-link" id="driversToggle" aria-expanded="false" hidden></button></div>
+          <div class="table-wrap" id="driverStandings"></div>
+        </div>
+        <div class="card">
+          <div class="card-head"><h2>Constructor standings</h2></div>
+          <div class="table-wrap" id="constructorStandings"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-race" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-race" hidden>
+      <div class="tiles" id="raceTiles"></div>
+
+      <div class="grid-2 race-row">
+        <div class="card fill">
+          <div class="card-head"><div><h2>Grid to flag</h2><p class="hint" id="slopeHint"></p></div></div>
+          <div class="chart-fill slope-fill"><canvas id="slopeChart" role="img" aria-label="Slope chart from each driver’s starting position to their finishing position; the same figures are in the race result table"></canvas></div>
+        </div>
+        <div class="card fill">
+          <div class="card-head"><div><h2>Positions gained or lost</h2><p class="hint">Grid position minus finishing position, classified finishers only.</p></div></div>
+          <div class="chart-fill"><canvas id="positionsChart" role="img" aria-label="Bar chart of places gained or lost per driver; the same figures are in the race result table"></canvas></div>
+        </div>
+      </div>
+
+      <div class="grid-2 race-row">
+        <div class="card"><div class="card-head"><h2>Race result</h2></div><div class="table-wrap" id="raceResults"></div></div>
+        <div class="card"><div class="card-head"><h2>Qualifying</h2></div><div class="table-wrap" id="qualiResults"></div></div>
+      </div>
+
+      <div class="grid-2 race-row" id="raceRowC">
+        <div class="card fill">
+          <div class="card-head"><div><h2>Qualifying gap to pole</h2><p class="hint">Best qualifying lap minus the fastest, in seconds.</p></div></div>
+          <div class="chart-fill"><canvas id="qualiGapChart" role="img" aria-label="Bar chart of each driver’s qualifying gap to pole; the same figures are in the qualifying table"></canvas></div>
+        </div>
+        <div class="card" id="lapCard">
+          <div class="card-head"><h2>Lap times</h2></div>
+          <div class="filters">
+            <label class="field">Drivers (up to 4) <select id="lapDrivers" multiple size="4"></select></label>
+            <label class="check"><input type="checkbox" id="lapFilterSlow" checked> Hide pit and safety-car laps</label>
+          </div>
+          <div class="chart-box"><canvas id="lapChart" role="img" aria-label="Line chart of the selected drivers’ lap times; the same figures are summarised in the table below"></canvas></div>
+          <div class="table-wrap" id="lapStats"></div>
+        </div>
+      </div>
+    </section>
+
+    <section id="tab-drivers" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-drivers" hidden>
+      <div class="filters">
+        <label class="field">Constructor <select id="driverTeamFilter"><option value="">All</option></select></label>
+        <label class="field">Drivers (up to 4) <select id="compareDrivers" multiple size="5"></select></label>
+      </div>
+      <div class="card"><h2>Head to head</h2><div class="table-wrap" id="compareTable"></div></div>
+      <div class="grid-2">
+        <div class="card">
+          <h2>Finishing position by race</h2>
+          <p class="hint">Gaps are retirements or missed races.</p>
+          <div class="chart-box"><canvas id="finishChart" role="img" aria-label="Line chart of each selected driver’s finishing position by race"></canvas></div>
+        </div>
+        <div class="card">
+          <h2>Cumulative points</h2>
+          <div class="chart-box"><canvas id="comparePointsChart" role="img" aria-label="Line chart of the selected drivers’ cumulative points by race"></canvas></div>
+        </div>
+      </div>
+      <div class="card"><h2>Teammate qualifying battles</h2><div class="table-wrap" id="teammateTable"></div></div>
+    </section>
+
+    <section id="tab-constructors" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-constructors" hidden>
+      <div class="card">
+        <h2>Constructor points</h2>
+        <div class="chart-box"><canvas id="teamPointsChart" role="img" aria-label="Bar chart of constructor points; the same figures are in the table below"></canvas></div>
+      </div>
+      <div class="card"><h2>Constructor statistics</h2><div class="table-wrap" id="teamStats"></div></div>
+    </section>
+
+    <section id="tab-quality" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-quality" hidden>
+      <div class="tiles" id="qualityTiles"></div>
+      <div class="card"><h2>Validation issues</h2><div class="table-wrap" id="qualityIssues"></div></div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    Data: <a href="https://github.com/jolpica/jolpica-f1" rel="noopener">Jolpica-F1</a>, licensed CC BY-NC-SA 4.0.
+    Unofficial project, not associated with Formula 1 companies.
+  </footer>
+
+  <script src="vendor/chart.umd.min.js"></script>
+  <script src="js/api.js"></script>
+  <script src="js/teams.js"></script>
+  <script src="js/charts.js"></script>
+  <script src="js/app.js"></script>
+</body>
+</html>
