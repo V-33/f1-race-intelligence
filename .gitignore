@@ -6,6 +6,8 @@ node_modules/
 .aws/
 .DS_Store
 npm-debug.log*
+.npm-cache/
+lambda/processSeason/dist/
 
 # working files from design tooling
 .taste-skill/
