@@ -1,0 +1,29 @@
+{
+  "season": 2024,
+  "generatedAt": "2026-10-19T06:12:11.589Z",
+  "racesProcessed": 24,
+  "lapRounds": [],
+  "errors": 0,
+  "warnings": 3,
+  "pointsCheck": {
+    "checked": 24,
+    "matched": 24
+  },
+  "issues": [
+    {
+      "level": "warn",
+      "where": "round 2 qualifying",
+      "message": "no qualifying time for zhou"
+    },
+    {
+      "level": "warn",
+      "where": "round 7 qualifying",
+      "message": "no qualifying time for sargeant"
+    },
+    {
+      "level": "warn",
+      "where": "round 15 qualifying",
+      "message": "no qualifying time for sargeant"
+    }
+  ]
+}
