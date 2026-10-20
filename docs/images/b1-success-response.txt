@@ -1,0 +1,12 @@
+{
+  "season": 2025,
+  "status": "SUCCEEDED",
+  "counts": {
+    "requests": 36,
+    "s3Objects": 13,
+    "seasonItems": 46,
+    "races": 24,
+    "drivers": 21,
+    "lapRounds": 2
+  }
+}

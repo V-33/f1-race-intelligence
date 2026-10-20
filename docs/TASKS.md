@@ -37,6 +37,18 @@ The project follows the 10 steps in the brief. Steps 1 to 6 are done (the lead's
 
 ## Part B: teammate
 
+### Verification update — 20 October 2026
+
+- B1: deployed; manual 2025 run with lap rounds 1 and 2 succeeded and rendered on EC2.
+- B2: weekly schedule enabled; one-time scheduled 2026 run verified in logs and DynamoDB.
+- B3: seven-day Lambda retention and Errors alarm verified using a controlled failure.
+- B4: SNS subscription confirmed, alarm action succeeded, recipient confirmed email receipt.
+- B5: [test log and screenshots](TESTING.md) recorded. EC2 writer policy remains attached by design; negative Lambda tests use IAM simulation, so literal live AccessDenied evidence is still a caveat.
+- B6: [five-minute demo guide](DEMO.md), final architecture image and dashboard screenshots added.
+
+Actual EC2 role observed: `ec2-developer` (reader plus uploader), rather than
+`f1-ri-ec2-role`. The original known-gaps list above describes the pre-Part-B state.
+
 Each task is self-contained. Start from the files listed under "Start from"; the "Done when" line is the acceptance check.
 
 ### B1. Lambda processing function (brief step 7)

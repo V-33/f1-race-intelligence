@@ -4,6 +4,22 @@
 
 Users pick a season or race and explore driver and constructor statistics from processed historical data. Processing runs on a schedule in AWS. The dashboard reads only processed data and never calls the public F1 API directly.
 
+## Deployment verified 20 October 2026
+
+![Final deployed architecture](images/architecture-final.svg)
+
+Lambda `f1-ri-process-season`, weekly Scheduler `f1-ri-weekly-season`,
+seven-day Lambda logs, Errors alarm `f1-ri-process-season-errors` and confirmed
+SNS topic `f1-ri-alerts` are deployed in ap-south-2. Manual 2025 processing
+includes lap rounds 1 and 2; a scheduled 2026 run and the live EC2 dashboard
+were verified. See [test evidence](TESTING.md) and [demo guide](DEMO.md).
+
+The actual EC2 instance uses role `ec2-developer`, which retains both
+`f1-ri-reader` and `f1-ri-uploader` by the lead's design. It is not read-only.
+The Lambda role scopes storage writes to the project bucket prefixes/table.
+Only Lambda CloudWatch logs were observed; the EC2 logging arrow below is a
+target design, not a claim that an EC2 log group has been deployed.
+
 ## Target AWS architecture
 
 ```mermaid

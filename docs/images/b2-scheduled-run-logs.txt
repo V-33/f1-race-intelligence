@@ -1,0 +1,49 @@
+	
+Timestamp
+	
+Message
+
+
+	
+	
+No older events at this moment. 
+Retry
+
+
+	
+2026-10-20T03:30:04.238Z
+	
+INIT_START Runtime Version: nodejs:24.mainline.v79 Runtime Version ARN: arn:aws:lambda:ap-south-2::runtime:88e03c92517ea4e25874b2ff8f059c90f3f223d7565a5f1a4492b996a44e9681
+
+
+	
+2026-10-20T03:30:04.381Z
+	
+START RequestId: 9a6ad6e0-38d7-44b0-a5d1-88e342e8e521 Version: $LATEST
+
+
+	
+2026-10-20T03:30:19.936Z
+	
+2026-10-20T03:30:19.936Z 9a6ad6e0-38d7-44b0-a5d1-88e342e8e521 INFO {"event":"seasonProcessed","season":2026,"counts":{"requests":13,"s3Objects":9,"seasonItems":41,"races":17,"drivers":23,"lapRounds":0}}
+
+
+	
+2026-10-20T03:30:19.938Z
+	
+END RequestId: 9a6ad6e0-38d7-44b0-a5d1-88e342e8e521
+
+
+	
+2026-10-20T03:30:19.938Z
+	
+REPORT RequestId: 9a6ad6e0-38d7-44b0-a5d1-88e342e8e521 Duration: 15557.05 ms Billed Duration: 15697 ms Memory Size: 512 MB Max Memory Used: 143 MB Init Duration: 139.21 ms
+
+
+	
+	
+No newer events at this moment. 
+Auto retry paused.
+ 
+Resume
+ 

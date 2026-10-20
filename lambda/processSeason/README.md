@@ -1,7 +1,25 @@
 # B1 processing Lambda
 
-Implementation is ready for local tests; AWS deployment and acceptance are pending.
-No AWS run has been performed by this implementation yet.
+All 58 repository tests passed on 2026-10-19, including five Lambda tests.
+Deployed and verified: manual 2025 processing with laps succeeded, and a scheduled
+2026 refresh succeeded on 20 October 2026. The live dashboard reads both seasons.
+
+Created in account 414455963976, region ap-south-2:
+- Function: `f1-ri-process-season`, Node.js 24.x, x86_64, outside a VPC.
+- Handler: `lambda/processSeason/index.handler`; memory 512 MB; timeout 300 seconds.
+- Environment: `S3_BUCKET=f1-ri-1`, `DDB_TABLE=f1-race-intelligence`.
+- Execution role: `f1-ri-process-season-role-j9fwkqhj`.
+- Inline policy `ProcessSeasonStorageWrite`: PutObject only on the bucket's
+  raw/processed prefixes, PutItem/BatchWriteItem only on the project table.
+- The automatically created CloudWatch logging policy is also attached.
+
+The uploaded ZIP preserves the repository paths and uses runtime AWS SDK v3.
+Weekly schedule `f1-ri-weekly-season` invokes with `{}` Mondays 06:00 UTC.
+CloudWatch retention is seven days; alarm `f1-ri-process-season-errors` uses
+Errors Sum >= 1 / five minutes and SNS topic `f1-ri-alerts`. Confirmed email
+delivery was tested. See `docs/TESTING.md` for evidence and permission caveats,
+and `docs/DEMO.md` for the walkthrough. Reserved concurrency was recommended
+below but has not been configured.
 
 The handler reuses `processSeason`, `awsLayout`, and the upload script's bounded
 DynamoDB batch retry helper. It stores the original MRData pages in raw endpoint
@@ -13,7 +31,7 @@ and the platform timeout log identify that case.
 
 ## Console deployment
 
-1. Complete initial password change and assign MFA before resource changes.
+1. Sign in using the project's authorized console identity.
 2. Check Hyderabad (`ap-south-2`) in the region selector before every service.
 3. Package the repository paths `lambda/processSeason/index.js`,
    `processing/src/` and `processing/scripts/upload.js` into a ZIP, preserving
