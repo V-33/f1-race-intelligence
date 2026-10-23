@@ -49,6 +49,8 @@ test('every video is muted, inline and small, and the file exists', () => {
     assert.match(v, /\splaysinline\b/, 'video must play inline');
     const src = /<source[^>]*\ssrc="([^"]+)"/i.exec(v)?.[1];
     assert.ok(src, 'video has no source');
+    const poster = /\sposter="([^"]+)"/i.exec(v)?.[1];
+    assert.ok(poster && fs.existsSync(path.join(root, poster)), `video ${src} needs an existing poster image`);
     const file = path.join(root, src);
     assert.ok(fs.existsSync(file), `missing ${src}`);
     assert.ok(fs.statSync(file).size < 8 * 1024 * 1024, `${src} is over 8 MB`);

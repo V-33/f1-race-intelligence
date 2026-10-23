@@ -123,7 +123,7 @@ S3 lifecycle rule `expire-raw-90d` on bucket `f1-ri-1`: the scope is the prefix 
 
 ## Updating the app
 
-Package and copy again (steps 3 and 4; the package now includes `frontend/video/`, about 9 MB of clips, and `frontend/img/`), then on the instance: `cd ~ && rm -rf ~/app && mkdir ~/app && tar -xzf ~/f1app.tgz -C ~/app && cd ~/app && npm install --omit=dev && sudo systemctl restart f1`.
+Package and copy again (steps 3 and 4; the package now includes `frontend/video/`, about 3 MB of clips and posters, and `frontend/img/`), then on the instance: `cd ~ && rm -rf ~/app && mkdir ~/app && tar -xzf ~/f1app.tgz -C ~/app && cd ~/app && npm install --omit=dev && sudo systemctl restart f1`.
 
 New data needs no redeploy. The app caches reads for 5 minutes, so a new processing run appears within that time. To load a season from a laptop: `node processing/scripts/upload.js 2024` (with `S3_BUCKET`, `DDB_TABLE`, `AWS_REGION` set and AWS credentials from the CLI).
 

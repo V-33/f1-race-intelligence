@@ -212,7 +212,7 @@ a { color: var(--text); text-decoration: underline; text-underline-offset: 2px; 
   transform: translate3d(0, var(--py, 0px), 0) scale(1.04);
   filter: saturate(1.05) contrast(1.05); opacity: .94;
 }
-.hero-video::after { content: ""; position: absolute; inset: 0; background: rgba(11, 11, 13, .38); }
+.hero-video::after { content: ""; position: absolute; inset: 0; background: rgba(11, 11, 13, .26); }
 
 .hero-slope {
   position: absolute; z-index: 3; right: calc(var(--pad)); bottom: 36px; width: min(300px, 46%); margin: 0;
@@ -259,7 +259,7 @@ main { max-width: 1400px; margin: 0 auto; padding: 0 var(--pad) 40px; outline: 0
 }
 .band-video, .band-video video { position: absolute; inset: 0; width: 100%; height: 100%; }
 .band-video video { object-fit: cover; object-position: 50% 62%; transform: scale(1.04); filter: contrast(1.1) saturate(1.1); }
-.band-video::after { content: ""; position: absolute; inset: 0; background: rgba(11, 11, 13, .6); }
+.band-video::after { content: ""; position: absolute; inset: 0; background: rgba(11, 11, 13, .5); }
 .band-track { position: absolute; inset: 0; display: flex; align-items: center; overflow: hidden; }
 .band-run {
   display: flex; flex: none; align-items: center; gap: .5em; white-space: nowrap; will-change: transform;
