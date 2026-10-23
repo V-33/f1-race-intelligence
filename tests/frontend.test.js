@@ -40,6 +40,21 @@ test('every local file referenced from index.html or the CSS exists', () => {
   assert.deepEqual(missing, []);
 });
 
+// Browsers only autoplay video that is muted and inline, and clips are served from this site's own disk.
+test('every video is muted, inline and small, and the file exists', () => {
+  const videos = [...html.matchAll(/<video\b[^>]*>[\s\S]*?<\/video>/gi)].map((m) => m[0]);
+  assert.ok(videos.length >= 1);
+  for (const v of videos) {
+    assert.match(v, /\smuted\b/, 'video must be muted');
+    assert.match(v, /\splaysinline\b/, 'video must play inline');
+    const src = /<source[^>]*\ssrc="([^"]+)"/i.exec(v)?.[1];
+    assert.ok(src, 'video has no source');
+    const file = path.join(root, src);
+    assert.ok(fs.existsSync(file), `missing ${src}`);
+    assert.ok(fs.statSync(file).size < 8 * 1024 * 1024, `${src} is over 8 MB`);
+  }
+});
+
 test('every font file ships with its licence text', () => {
   const dir = path.join(root, 'fonts');
   const files = fs.readdirSync(dir);

@@ -13,7 +13,7 @@ const Charts = (() => {
   const FONT_SIZE = 12;
   // Set on each chart, never on Chart.defaults: replacing the default animation object drops the keys
   // Chart.js needs to animate colours (the chart then fails with "this._fn is not a function").
-  const animation = () => (reducedMotion() ? false : { duration: 450, easing: 'easeOutQuart' });
+  const animation = () => (reducedMotion() ? false : { duration: 1000, easing: 'easeOutQuart' });
 
   function base() {
     Chart.defaults.font.family = css('--font-text');
@@ -22,11 +22,40 @@ const Charts = (() => {
     Chart.defaults.borderColor = css('--grid');
   }
 
-  function render(id, config) {
+  // A chart is built the first time it scrolls into view, so its entrance animation is seen, not spent
+  // off-screen. A chart on a hidden tab waits until the tab is shown. Without scroll observation, or
+  // with reduced motion, charts are built at once.
+  const pending = new Map();
+  const watcher = 'IntersectionObserver' in window
+    ? new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (!e.isIntersecting) continue;
+        const id = e.target.id;
+        const config = pending.get(id);
+        watcher.unobserve(e.target);
+        pending.delete(id);
+        if (config) build(id, config);
+      }
+    }, { threshold: 0.2 })
+    : null;
+
+  function build(id, config) {
     base();
     instances[id]?.destroy();
     instances[id] = new Chart(document.getElementById(id), config);
     return instances[id];
+  }
+
+  function render(id, config) {
+    const canvas = document.getElementById(id);
+    instances[id]?.destroy();
+    delete instances[id];
+    pending.delete(id);
+    watcher?.unobserve(canvas);
+    if (!watcher || reducedMotion()) return build(id, config);
+    pending.set(id, config);
+    watcher.observe(canvas);
+    return null;
   }
 
   const textWidth = (text) => {
@@ -305,6 +334,8 @@ const Charts = (() => {
   function clear(id) {
     instances[id]?.destroy();
     delete instances[id];
+    pending.delete(id);
+    if (watcher) watcher.unobserve(document.getElementById(id));
   }
 
   // "#rrggbb" with an alpha, for dimming lines without changing their hue

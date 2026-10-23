@@ -2,8 +2,12 @@
  "season": 2024,
  "source": "https://api.jolpi.ca/ergast/f1",
  "license": "CC BY-NC-SA 4.0 (Jolpica-F1)",
- "fetchedAt": "2026-10-19T06:11:59.470Z",
- "requests": 15,
- "durationMs": 17688,
- "lapRounds": []
+ "fetchedAt": "2026-10-19T12:13:07.317Z",
+ "requests": 50,
+ "durationMs": 171227,
+ "lapRounds": [
+  1,
+  8,
+  22
+ ]
 }

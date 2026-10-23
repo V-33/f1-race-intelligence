@@ -1,5 +1,5 @@
 'use strict';
-/* global Api, Charts, Teams */
+/* global Api, Charts, Teams, Motion */
 
 const state = { season: null, data: null, round: null, laps: null, colorSlots: new Map() };
 const $ = (id) => document.getElementById(id);
@@ -58,6 +58,7 @@ function tiles(el, items) {
   el.innerHTML = items.map((t) => `<div class="tile${t.lead ? ' lead' : ''}"><div class="label">${esc(t.label)}</div>` +
     `<div class="value">${esc(t.value)}${t.unit ? `<span class="unit"> ${esc(t.unit)}</span>` : ''}</div>` +
     `${t.detail ? `<div class="detail">${esc(t.detail)}</div>` : ''}</div>`).join('');
+  Motion.countTiles(el);
 }
 
 // The line under the page title: the data source by default, a finding on the Overview.
@@ -108,7 +109,9 @@ function markTab(name) {
   $('pageTitle').textContent = TAB_TITLES[name] || name;
   $('overviewActions').hidden = name !== 'overview';
   $('raceControls').hidden = name !== 'race';
+  $('raceClip').hidden = name !== 'race';
   if (state.data) setPageLine(`${state.season} season · ${state.data.source}`);
+  Motion.tabInk();
 }
 
 function showTab(name) {
@@ -496,6 +499,7 @@ async function loadSeasonData(season) {
   $('compareDrivers').innerHTML = '';
   setStatus('');
   renderTab(currentTab());
+  document.dispatchEvent(new CustomEvent('f1:season', { detail: { season, data } }));
 }
 
 function guard(fn) {
@@ -505,7 +509,10 @@ function guard(fn) {
 }
 
 async function init() {
-  document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', guard(() => showTab(b.dataset.tab))));
+  document.querySelectorAll('.tabs button').forEach((b) => b.addEventListener('click', guard(async () => {
+    Motion.toDashboard();
+    await showTab(b.dataset.tab);
+  })));
   $('seasonSelect').addEventListener('change', guard((e) => loadSeason(Number(e.target.value))));
   ['raceSelect', 'raceTeamFilter', 'lapDrivers', 'lapFilterSlow'].forEach((id) => $(id).addEventListener('change', guard(renderRace)));
   ['driverTeamFilter', 'compareDrivers'].forEach((id) => $(id).addEventListener('change', guard(renderDrivers)));

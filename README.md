@@ -30,7 +30,7 @@ npm test                               # automated tests
 
 ```
 backend/      Express API, input validation, data-store interface (local files today)
-frontend/     Dashboard: HTML, CSS, plain JavaScript, Chart.js
+frontend/     Dashboard: HTML, CSS, plain JavaScript, Chart.js; video/ (clips), img/, js/motion.js, hero.js, cursor.js
 processing/   Jolpica client, validation, metrics; CLI scripts for ingest and process
 data/         raw/ (API downloads) and processed/ (dashboard data)
 docs/         Architecture, data sources, task plan
@@ -39,7 +39,10 @@ tests/        node:test suites using a small synthetic season
 
 ## Interface
 
-- **Theme:** dark or light, from the toggle in the top bar. The first visit follows the system setting and the choice is remembered in the browser.
+- **Look:** one motif, the grid-to-flag slope, runs through the page: the logo, the slanted cut of the hero video, the band, the buttons, the bullet before each card title and the season lines in the footer. Race red marks the slope, the main action and the selection.
+- **Hero and band:** a full-screen opening with a looping start clip and a small grid-to-flag chart of the latest processed race, then a slanted band with an onboard clip and the season's figures running sideways as you scroll. The Race tab has a small helmet clip beside its title. Clips live in `frontend/video/` (three short MP4 files, muted, played only while on screen, with a pause button). They are short F1 broadcast excerpts from Tenor, used in this private academic project, and belong to their owners.
+- **Motion:** content reveals on scroll, figures count up, charts draw when they scroll into view, the tab mark slides, and the footer draws the season's championship lines from the data. A pointer layer (red marker, trailing ring, buttons that lean toward the pointer) appears only on devices with a mouse. With reduced motion everything is shown at once and the video stays on its first frame.
+- **Theme:** dark or light, from the toggle in the top bar. The first visit follows the system setting and the choice is remembered in the browser. The hero and the band stay dark in both.
 - **Team colours:** driver and constructor lines and markers use team colours (`frontend/js/teams.js`). A team's second driver is drawn with a dashed line, so colour is never the only signal. Teams not listed there fall back to a neutral palette.
 - **Charts:** drawn with Chart.js using colours from the CSS variables in `frontend/css/styles.css`, so both themes stay in step. The slope chart on the Race tab shows each driver's grid position against their finish.
 - **Fonts:** Public Sans and Barlow Condensed, served from `frontend/fonts/` (the page's Content-Security-Policy only allows files from this site). Both are licensed under the SIL Open Font License; the licence texts are in the same folder.
@@ -67,7 +70,7 @@ tests/        node:test suites using a small synthetic season
 
 ## Status and next steps
 
-Steps 1 to 6 of the brief are done: the dashboard, data processing, the API, the S3 and DynamoDB data stores with an upload script (tested against a real bucket and table), and the deployment on EC2 with an IAM instance role ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)). Lambda, EventBridge, CloudWatch, SNS, end-to-end testing and the demo guide are the teammate's part. Status, known gaps, ownership and the final testing and demo checklist are in [docs/TASKS.md](docs/TASKS.md).
+Steps 1 to 6 of the brief are done: the dashboard, data processing, the API, the S3 and DynamoDB data stores with an upload script (tested against a real bucket and table), the deployment on EC2 with an IAM instance role ([docs/DEPLOYMENT.md](docs/DEPLOYMENT.md)), and EC2 app logs in CloudWatch, an EC2 status alarm, a dashboard and an S3 lifecycle rule on `raw/` (same file, "Logs and monitoring"). Lambda, EventBridge, CloudWatch, SNS, end-to-end testing and the demo guide are the teammate's part. Status, known gaps, ownership and the final testing and demo checklist are in [docs/TASKS.md](docs/TASKS.md).
 
 ### Using AWS storage
 

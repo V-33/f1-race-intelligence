@@ -1,10 +1,14 @@
 {
   "season": 2024,
-  "generatedAt": "2026-10-19T06:12:11.589Z",
+  "generatedAt": "2026-10-19T12:13:24.177Z",
   "racesProcessed": 24,
-  "lapRounds": [],
+  "lapRounds": [
+    1,
+    8,
+    22
+  ],
   "errors": 0,
-  "warnings": 3,
+  "warnings": 19,
   "pointsCheck": {
     "checked": 24,
     "matched": 24
@@ -24,6 +28,86 @@
       "level": "warn",
       "where": "round 15 qualifying",
       "message": "no qualifying time for sargeant"
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for leclerc has invalid time \"40:56.330\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for piastri has invalid time \"40:58.744\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for sainz has invalid time \"41:02.721\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for norris has invalid time \"41:08.042\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for russell has invalid time \"41:13.884\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for max_verstappen has invalid time \"41:18.944\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for hamilton has invalid time \"41:23.804\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for tsunoda has invalid time \"41:28.609\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for albon has invalid time \"41:34.817\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for gasly has invalid time \"41:37.695\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for stroll has invalid time \"41:42.648\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for ricciardo has invalid time \"41:47.607\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for alonso has invalid time \"41:53.184\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for sargeant has invalid time \"41:56.858\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for bottas has invalid time \"42:01.748\""
+    },
+    {
+      "level": "warn",
+      "where": "round 8 laps",
+      "message": "lap 1 for zhou has invalid time \"42:06.253\""
     }
   ]
 }
