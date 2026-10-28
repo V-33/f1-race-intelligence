@@ -331,6 +331,47 @@ const Charts = (() => {
     });
   }
 
+  // Radar chart. sets = [{ label, color, data (0 to 1), raw (text shown in the tooltip) }]
+  function radar(id, labels, sets) {
+    const gridColour = css('--grid');
+    return render(id, {
+      type: 'radar',
+      data: {
+        labels,
+        datasets: sets.map((s) => ({
+          label: s.label,
+          raw: s.raw,
+          data: s.data,
+          borderColor: s.color,
+          backgroundColor: fade(s.color, 0.16),
+          borderWidth: 2,
+          pointRadius: 3,
+          pointHoverRadius: 5,
+          pointBackgroundColor: s.color,
+        })),
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: animation(),
+        plugins: {
+          legend: { position: 'bottom', labels: { color: css('--text-secondary'), usePointStyle: true, boxWidth: 8, padding: 16 } },
+          tooltip: tooltip({ label: (c) => `${c.dataset.label}: ${c.dataset.raw[c.dataIndex]}` }),
+        },
+        scales: {
+          r: {
+            min: 0,
+            max: 1,
+            ticks: { display: false, stepSize: 0.25 },
+            grid: { color: gridColour },
+            angleLines: { color: gridColour },
+            pointLabels: { color: css('--text-secondary'), font: { size: 12 } },
+          },
+        },
+      },
+    });
+  }
+
   function clear(id) {
     instances[id]?.destroy();
     delete instances[id];
@@ -344,5 +385,5 @@ const Charts = (() => {
     return `rgba(${n >> 16}, ${(n >> 8) & 255}, ${n & 255}, ${alpha})`;
   }
 
-  return { lines, hbars, slope, clear, fade, series, css };
+  return { lines, hbars, slope, radar, clear, fade, series, css };
 })();

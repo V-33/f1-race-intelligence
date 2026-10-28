@@ -1,5 +1,5 @@
 'use strict';
-/* global Teams */
+/* global Teams, gsap */
 // The hero's data line and its small grid-to-flag chart, drawn from the latest processed race.
 // app.js announces each loaded season with a "f1:season" event. The chart is a preview: the Race tab holds
 // the same figures in a table, and the chart's label says so.
@@ -9,6 +9,7 @@
   const H = 330;
   const PAD_X = 22;
   const PAD_Y = 14;
+  let footTween = null;
 
   const svgEl = (name, attrs) => {
     const el = document.createElementNS(NS, name);
@@ -57,6 +58,10 @@
         svg.append(dot);
       }
     });
+    if (document.documentElement.classList.contains('gsap')) {
+      gsap.fromTo(svg.querySelectorAll('.hs-line'), { strokeDashoffset: 1 }, { strokeDashoffset: 0, duration: 1.2, ease: 'power3.out', stagger: 0.04, delay: 1.2 });
+      gsap.fromTo(svg.querySelectorAll('.hs-dot'), { opacity: 0 }, { opacity: 1, duration: 0.4, stagger: 0.015, delay: 2 });
+    }
     document.getElementById('heroSlopeCap').textContent = `${race.name}: each line runs from the starting grid (left) to the finish (right). Team colours.`;
     card.hidden = false;
   }
@@ -87,6 +92,9 @@
   function footer(season, data) {
     const svg = document.getElementById('footLines');
     if (!svg) return;
+    footTween?.scrollTrigger?.kill();
+    footTween?.kill();
+    footTween = null;
     const rounds = data.progression.rounds.length;
     const top = data.driverStats.slice(0, 5).map((s) => s.driverId);
     const series = top.map((id) => data.progression.drivers[id]);
@@ -105,6 +113,12 @@
       path.style.setProperty('transition-delay', `${k * 160}ms`);
       svg.append(path);
     });
+    if (document.documentElement.classList.contains('gsap')) {
+      footTween = gsap.fromTo(svg.querySelectorAll('.fl-line'), { strokeDashoffset: 1 }, {
+        strokeDashoffset: 0, ease: 'none', stagger: 0.12,
+        scrollTrigger: { trigger: svg, start: 'top 96%', end: 'top 38%', scrub: 0.6 },
+      });
+    }
     const names = top.map((id) => data.drivers[id]?.name || id);
     document.getElementById('footCap').textContent = `${season} championship points by round: ${names.join(', ')}.`;
   }

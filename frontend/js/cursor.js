@@ -24,6 +24,10 @@
   let ry = y;
   let raf = 0;
   const place = (el, px, py) => el.style.setProperty('transform', `translate3d(${px}px, ${py}px, 0)`);
+  // GSAP's quickTo gives the ring a soft, springy follow; without GSAP a plain easing loop does the job
+  const g = window.gsap;
+  const ringX = g ? g.quickTo(ring, 'x', { duration: 0.5, ease: 'power3.out' }) : null;
+  const ringY = g ? g.quickTo(ring, 'y', { duration: 0.5, ease: 'power3.out' }) : null;
   function frame() {
     rx += (x - rx) * 0.18;
     ry += (y - ry) * 0.18;
@@ -39,7 +43,7 @@
     y = e.clientY;
     place(dot, x, y);
     cursor.classList.add('on');
-    if (!raf) raf = requestAnimationFrame(frame);
+    if (ringX) { ringX(x); ringY(y); } else if (!raf) raf = requestAnimationFrame(frame);
     const over = e.target instanceof Element ? e.target : null;
     const interactive = over?.closest(HOT) && !over.closest('select');
     cursor.classList.toggle('hot', Boolean(interactive));

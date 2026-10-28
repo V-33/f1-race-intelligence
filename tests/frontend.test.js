@@ -57,6 +57,27 @@ test('every video is muted, inline and small, and the file exists', () => {
   }
 });
 
+test('the server serves the animation libraries, and the page loads them before the scripts that use them', async () => {
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'f1-vendor-'));
+  const server = createApp(new LocalStore(dir)).listen(0);
+  await new Promise((r) => server.once('listening', r));
+  try {
+    for (const file of ['gsap/gsap.min.js', 'gsap/ScrollTrigger.min.js', 'lenis/lenis.min.js', 'chart.umd.min.js']) {
+      const res = await fetch(`http://127.0.0.1:${server.address().port}/vendor/${file}`);
+      assert.equal(res.status, 200, file);
+      assert.ok((await res.arrayBuffer()).byteLength > 10000, file);
+    }
+  } finally {
+    server.close();
+    fs.rmSync(dir, { recursive: true, force: true });
+  }
+  const order = [...html.matchAll(/<script src="([^"]+)"/g)].map((m) => m[1]);
+  const at = (name) => order.findIndex((s) => s.endsWith(name));
+  for (const lib of ['gsap/gsap.min.js', 'gsap/ScrollTrigger.min.js', 'lenis/lenis.min.js']) {
+    assert.ok(at(lib) >= 0 && at(lib) < at('js/motion.js') && at(lib) < at('js/viz.js') && at('js/viz.js') < at('js/app.js'), lib);
+  }
+});
+
 test('every font file ships with its licence text', () => {
   const dir = path.join(root, 'fonts');
   const files = fs.readdirSync(dir);

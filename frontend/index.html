@@ -101,6 +101,21 @@
 
     <section id="tab-overview" class="tab-panel" role="tabpanel" aria-labelledby="tabbtn-overview">
       <div class="tiles" id="overviewTiles"></div>
+      <div class="card" id="barsCard">
+        <div class="card-head">
+          <div>
+            <h3>Championship race</h3>
+            <p class="hint" id="barsHint">The top ten drivers re-ranked after every round.</p>
+          </div>
+          <div class="player">
+            <button type="button" class="btn" id="barsPlay" aria-pressed="false">Play</button>
+            <label class="scrub"><span class="sr-only">Round</span><input type="range" id="barsRound" min="1" max="1" value="1"></label>
+            <output class="player-label" id="barsLabel" for="barsRound"></output>
+          </div>
+        </div>
+        <div class="race-bars" id="raceBars" role="img" aria-label="Animated bars of the top ten drivers' championship points after each round. The standings table below has the final figures."></div>
+        <p class="sr-only" id="barsLive" aria-live="polite"></p>
+      </div>
       <div class="card">
         <div class="card-head">
           <div>
@@ -140,6 +155,23 @@
         </div>
       </div>
 
+      <div class="card" id="replayCard" hidden>
+        <div class="card-head">
+          <div>
+            <h3>Race replay</h3>
+            <p class="hint" id="replayHint">Running order lap by lap, rebuilt from the lap times. It is an approximation: laps without a recorded time use the driver's median, so pit stops can shift places a little.</p>
+          </div>
+          <div class="player">
+            <button type="button" class="btn" id="replayPlay" aria-pressed="false">Play</button>
+            <label class="scrub"><span class="sr-only">Lap</span><input type="range" id="replayLap" min="1" max="1" value="1"></label>
+            <output class="player-label" id="replayLabel" for="replayLap"></output>
+          </div>
+        </div>
+        <div class="replay-box"><svg id="replaySvg" role="img" aria-label="Running order by lap for the selected race. The race result table has the official order."></svg></div>
+        <p class="hint swipe">Swipe sideways to follow the whole race.</p>
+        <p class="sr-only" id="replayLive" aria-live="polite"></p>
+      </div>
+
       <div class="grid-2 race-row">
         <div class="card"><div class="card-head"><h3>Race result</h3></div><div class="table-wrap" id="raceResults"></div></div>
         <div class="card"><div class="card-head"><h3>Qualifying</h3></div><div class="table-wrap" id="qualiResults"></div></div>
@@ -168,6 +200,18 @@
         <label class="field">Drivers (up to 4) <select id="compareDrivers" multiple size="5"></select></label>
       </div>
       <div class="card"><h3>Head to head</h3><div class="table-wrap" id="compareTable"></div></div>
+      <div class="card">
+        <h3>Season heatmap</h3>
+        <p class="hint">Finishing position at every round. Darker red is a better finish; a dash is a retirement or a missed race.</p>
+        <div class="table-wrap heat-wrap"><div class="heatmap" id="heatmap" role="img" aria-label="Finishing positions of the selected drivers at every round; the Finishing position chart has the same figures"></div></div>
+      </div>
+      <div class="grid-2">
+        <div class="card">
+          <h3>Driver profile</h3>
+          <p class="hint">Each axis is scaled 0 to 100 against every driver this season; further out is better. Hover for the real figures.</p>
+          <div class="chart-box tall"><canvas id="radarChart" role="img" aria-label="Radar chart comparing the selected drivers on points per start, average finish, average qualifying, places gained, podium rate and win rate; the head-to-head table has the same figures"></canvas></div>
+        </div>
+        </div>
       <div class="grid-2">
         <div class="card">
           <h3>Finishing position by race</h3>
@@ -202,14 +246,19 @@
     <p class="foot-cap" id="footCap"></p>
     <div class="foot-text">
       <p>Data: <a href="https://github.com/jolpica/jolpica-f1" rel="noopener">Jolpica-F1</a>, licensed CC BY-NC-SA 4.0. Unofficial project, not associated with Formula 1 companies. F1 and related marks belong to Formula One Licensing B.V.</p>
+      <p><button type="button" class="link-btn" id="smoothToggle" aria-pressed="true">Smooth scrolling: on</button></p>
       <p>Video clips are short excerpts from an official Formula 1 highlights video, cropped and edited for this private academic project. They belong to Formula 1 and their owners.</p>
     </div>
   </footer>
 
   <script src="vendor/chart.umd.min.js"></script>
+  <script src="vendor/gsap/gsap.min.js"></script>
+  <script src="vendor/gsap/ScrollTrigger.min.js"></script>
+  <script src="vendor/lenis/lenis.min.js"></script>
   <script src="js/api.js"></script>
   <script src="js/teams.js"></script>
   <script src="js/charts.js"></script>
+  <script src="js/viz.js"></script>
   <script src="js/motion.js"></script>
   <script src="js/hero.js"></script>
   <script src="js/cursor.js"></script>

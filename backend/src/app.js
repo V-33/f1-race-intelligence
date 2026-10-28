@@ -30,7 +30,10 @@ function createApp(store) {
   });
 
   app.use('/api', apiRouter(store));
-  app.use('/vendor', express.static(path.join(__dirname, '..', '..', 'node_modules', 'chart.js', 'dist'), { maxAge: '7d' }));
+  const modules = path.join(__dirname, '..', '..', 'node_modules');
+  app.use('/vendor/gsap', express.static(path.join(modules, 'gsap', 'dist'), { maxAge: '7d' }));
+  app.use('/vendor/lenis', express.static(path.join(modules, 'lenis', 'dist'), { maxAge: '7d' }));
+  app.use('/vendor', express.static(path.join(modules, 'chart.js', 'dist'), { maxAge: '7d' }));
   app.use(express.static(path.join(__dirname, '..', '..', 'frontend')));
 
   // Errors: known HttpErrors keep their message; anything else is logged and hidden from the client

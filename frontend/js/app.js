@@ -1,5 +1,5 @@
 'use strict';
-/* global Api, Charts, Teams, Motion */
+/* global Api, Charts, Teams, Motion, Viz */
 
 const state = { season: null, data: null, round: null, laps: null, colorSlots: new Map() };
 const $ = (id) => document.getElementById(id);
@@ -57,9 +57,23 @@ function tiles(el, items) {
   el.classList.toggle('has-lead', items.some((t) => t.lead));
   el.innerHTML = items.map((t) => `<div class="tile${t.lead ? ' lead' : ''}"><div class="label">${esc(t.label)}</div>` +
     `<div class="value">${esc(t.value)}${t.unit ? `<span class="unit"> ${esc(t.unit)}</span>` : ''}</div>` +
-    `${t.detail ? `<div class="detail">${esc(t.detail)}</div>` : ''}</div>`).join('');
+    `${t.detail ? `<div class="detail">${esc(t.detail)}</div>` : ''}${ringMarkup(t.ring)}</div>`).join('');
   Motion.countTiles(el);
+  Viz.rings(el);
 }
+
+// A thin progress ring for a figure that is a share of something (0 to 1)
+const ringMarkup = (frac) => (typeof frac === 'number' && frac >= 0
+  ? `<svg class="ring" viewBox="0 0 36 36" aria-hidden="true"><circle class="ring-bg" cx="18" cy="18" r="15.9155" pathLength="100"/><circle class="ring-fg" cx="18" cy="18" r="15.9155" pathLength="100" data-frac="${Math.min(1, frac)}"/></svg>`
+  : '');
+
+// Everything the visualisations need to name drivers and teams from the season in view
+const vizContext = () => ({
+  name: driverName,
+  code: driverCode,
+  teamOf: (id) => state.data.driverStandings.find((r) => r.driverId === id)?.constructorId,
+  colour: (team) => Teams.colour(team),
+});
 
 // The line under the page title: the data source by default, a finding on the Overview.
 const setPageLine = (text) => { $('dataSource').textContent = text; };
@@ -112,6 +126,7 @@ function markTab(name) {
   $('raceClip').hidden = name !== 'race';
   if (state.data) setPageLine(`${state.season} season · ${state.data.source}`);
   Motion.tabInk();
+  Motion.refresh();
 }
 
 function showTab(name) {
@@ -187,6 +202,7 @@ function renderOverview() {
 
   renderProgression();
   renderStandings();
+  Viz.raceBars({ data: d, name: driverName, teamOf: vizContext().teamOf });
 }
 
 // Lines take their team's colour; a team's second driver is dashed so teammates never rely on colour alone.
@@ -356,12 +372,14 @@ async function renderLaps(race) {
     $('lapStats').innerHTML = '<p class="muted">No lap data has been processed for this race. Run the ingest script with <code>--laps</code> for this round, then process the season again.</p>';
     Charts.clear('lapChart');
     $('lapDrivers').innerHTML = '';
+    Viz.replayHide();
     return;
   }
   if (!state.laps || state.laps.round !== race.round || state.laps.season !== state.season) {
     state.laps = await Api.laps(state.season, race.round);
   }
   const laps = state.laps;
+  Viz.replay({ race, laps, team: $('raceTeamFilter').value, ctx: { ...vizContext(), teamOf: (id) => race.results.find((r) => r.driverId === id)?.constructorId } });
   const sel = $('lapDrivers');
   const order = race.results.map((r) => r.driverId).filter((id) => laps.drivers[id]);
   const before = selected(sel);
@@ -430,6 +448,17 @@ async function renderDrivers() {
   Charts.lines('comparePointsChart', raceLabels(), cmp.drivers.map((x) => ({ label: x.name, short: driverCode(x.id), colorIndex: color(x.id), data: x.progression })),
     { yTitle: 'Points', tooltipSuffix: ' pts', titles: raceTitles() });
 
+  const picks = ids.map((id) => d.driverStats.find((s) => s.driverId === id)).filter(Boolean);
+  const prof = Viz.profile(d.driverStats, picks);
+  Charts.radar('radarChart', prof.labels, prof.sets.map((s) => ({
+    label: driverName(s.id), color: Charts.series(color(s.id)), data: s.data, raw: s.raw,
+  })));
+  Viz.heatmap({
+    drivers: cmp.drivers,
+    rounds: d.progression.rounds,
+    colour: (id) => Teams.colour(d.driverStandings.find((r) => r.driverId === id)?.constructorId),
+  });
+
   const battles = d.teammateQualifying.filter((t) => !team || t.constructorId === team);
   table($('teammateTable'), [
     { label: 'Constructor', value: (t) => teamName(t.constructorId) },
@@ -460,10 +489,10 @@ async function renderQuality() {
   const r = await Api.report(state.season);
   tiles($('qualityTiles'), [
     { label: 'Races processed', value: r.racesProcessed },
-    { label: 'Races with lap data', value: r.lapRounds.length },
+    { label: 'Races with lap data', value: r.lapRounds.length, ring: r.racesProcessed ? r.lapRounds.length / r.racesProcessed : undefined },
     { label: 'Rows dropped (errors)', value: r.errors },
     { label: 'Warnings', value: r.warnings },
-    { label: 'Points check vs official', value: `${r.pointsCheck.matched}/${r.pointsCheck.checked}`, detail: 'Drivers whose computed points match the official standings' },
+    { label: 'Points check vs official', value: `${r.pointsCheck.matched}/${r.pointsCheck.checked}`, detail: 'Drivers whose computed points match the official standings', ring: r.pointsCheck.checked ? r.pointsCheck.matched / r.pointsCheck.checked : undefined },
     { label: 'Processed at', value: new Date(r.generatedAt).toLocaleDateString(), detail: new Date(r.generatedAt).toLocaleTimeString() },
   ]);
   table($('qualityIssues'), [
